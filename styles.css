@@ -1444,3 +1444,45 @@ section h2 {
     transform: none;
   }
 }
+
+/* iPhone spezifische Anpassungen */
+@media (max-width: 414px) {
+  .logo-img {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .logo-image {
+    max-width: 28px;
+    max-height: 28px;
+  }
+  
+  .header-content h1 {
+    font-size: 1.1rem;
+  }
+  
+  .version-info {
+    font-size: 0.65rem;
+  }
+}
+
+/* iPhone SE und kleinere Geräte */
+@media (max-width: 375px) {
+  .logo-img {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logo-image {
+    max-width: 24px;
+    max-height: 24px;
+  }
+  
+  .logo {
+    gap: 0.5rem;
+  }
+  
+  .header-content h1 {
+    font-size: 1rem;
+  }
+}
