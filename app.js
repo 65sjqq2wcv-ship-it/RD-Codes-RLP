@@ -3,7 +3,7 @@ class RettungsdienstApp {
         this.codes = {};
         this.foundCodes = [];
         this.currentDataSource = 'default';
-        this.currentAppVersion = '1.7'; // Version synchron mit sw.js halten
+        this.currentAppVersion = '1.8'; // Version synchron mit sw.js halten
     }
 
     async init() {
