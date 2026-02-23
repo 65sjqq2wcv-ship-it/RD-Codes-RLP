@@ -3,7 +3,7 @@ class RettungsdienstApp {
         this.codes = {};
         this.foundCodes = [];
         this.currentDataSource = 'default';
-        this.currentAppVersion = '1.5'; // Version synchron mit sw.js halten
+        this.currentAppVersion = '1.6'; // Version synchron mit sw.js halten
     }
 
     async init() {
@@ -368,18 +368,25 @@ class RettungsdienstApp {
                 return;
             }
 
-            const categoriesHtml = Object.keys(this.codes.categories).map(key => {
-                const category = this.codes.categories[key];
+            // Kategorien nach Namen sortieren
+            const sortedCategories = Object.keys(this.codes.categories)
+                .map(key => ({
+                    key,
+                    category: this.codes.categories[key]
+                }))
+                .sort((a, b) => a.category.name.localeCompare(b.category.name));
+
+            const categoriesHtml = sortedCategories.map(({ key, category }) => {
                 const codeCount = Object.keys(category.codes || {}).length;
 
                 return `
-                    <div class="category-card category-${key}" 
-                         onclick="window.app.filterByCategory('${key}')" 
-                         style="background-color: ${category.color}15; border-left: 4px solid ${category.color};">
-                      <div class="category-title" style="color: ${category.color};">${category.name}</div>
-                      <div class="category-count">${codeCount} Codes</div>
-                    </div>
-                `;
+                <div class="category-card category-${key}" 
+                     onclick="window.app.filterByCategory('${key}')" 
+                     style="background-color: ${category.color}15; border-left: 4px solid ${category.color};">
+                  <div class="category-title" style="color: ${category.color};">${category.name}</div>
+                  <div class="category-count">${codeCount} Codes</div>
+                </div>
+            `;
             }).join('');
 
             grid.innerHTML = categoriesHtml;
@@ -476,12 +483,11 @@ class RettungsdienstApp {
 
         // Prüfen ob es eine Kategoriesuche ist
         if (query.startsWith('Kategorie: ')) {
-            // Kategorie-Filter wurde bereits angewendet, nichts weiter tun
-            return;
+            return; // Kategorie-Filter bereits angewendet
         }
 
-        // Normale Suche
-        const searchTerms = query.trim().split(/\s+/);
+        // Sowohl Minus als auch Leerzeichen als Trenner akzeptieren
+        const searchTerms = query.trim().split(/[\s\-]+/).filter(term => term.length > 0);
         const results = [];
 
         searchTerms.forEach(term => {
@@ -558,50 +564,7 @@ class RettungsdienstApp {
 
         if (foundCodesContainer) foundCodesContainer.innerHTML = resultsHtml;
 
-        if (codes.length > 0 && priorityAssessment) {
-            const priority = this.calculatePriority(codes);
-            priorityAssessment.className = `priority-assessment priority-${priority.level}`;
-            priorityAssessment.innerHTML = `
-                <div class="priority-title">
-                    ${priority.icon} ${priority.title}
-                </div>
-                <div class="priority-details">${priority.details}</div>
-            `;
-            priorityAssessment.style.display = 'block';
-        }
-
         if (searchResults) searchResults.style.display = 'block';
-    }
-
-    calculatePriority(codes) {
-        const highPriorityCodes = ['237', '222', '232', '260', '268', '900', '901', '902', '239', '341'];
-        const mediumPriorityCodes = ['221', '233', '236', '238', '261', '262', '230', '280', '340'];
-
-        const hasHighPriority = codes.some(code => highPriorityCodes.includes(code.code));
-        const hasMediumPriority = codes.some(code => mediumPriorityCodes.includes(code.code));
-
-        if (hasHighPriority) {
-            return {
-                level: 'high',
-                icon: '🚨',
-                title: 'HOHE PRIORITÄT',
-                details: 'Lebensbedrohlicher Zustand! Sofortige Maßnahmen erforderlich. RTW/NEF anfordern, ggf. Notarzt hinzuziehen.'
-            };
-        } else if (hasMediumPriority || codes.length >= 2) {
-            return {
-                level: 'medium',
-                icon: '⚠️',
-                title: 'MITTLERE PRIORITÄT',
-                details: 'Schwerwiegender Zustand. Zeitnahe Versorgung und Transport ins Krankenhaus. Überwachung der Vitalwerte.'
-            };
-        } else {
-            return {
-                level: 'low',
-                icon: '💚',
-                title: 'NIEDRIGE PRIORITÄT',
-                details: 'Stabile Situation. Routineversorgung und regulärer Transport. Kontinuierliche Überwachung.'
-            };
-        }
     }
 
     toggleClearButton(value) {
@@ -684,7 +647,7 @@ class RettungsdienstApp {
         if (!multiSearchInput) return;
 
         const currentValue = multiSearchInput.value.trim();
-        const currentCodes = currentValue.split(/\s+/).filter(c => c);
+        const currentCodes = currentValue.split(/[\s\-]+/).filter(c => c.length > 0);
         const codeExists = currentCodes.some(c => c.toLowerCase() === code.toLowerCase());
 
         if (codeExists) {
@@ -692,7 +655,8 @@ class RettungsdienstApp {
             return;
         }
 
-        const newValue = currentValue ? `${currentValue} ${code}` : code;
+        // Minus als Trenner verwenden
+        const newValue = currentValue ? `${currentValue}-${code}` : code;
         multiSearchInput.value = newValue;
         this.handleMultiSearch(newValue);
         this.toggleClearButton(newValue);

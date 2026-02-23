@@ -38,7 +38,7 @@
           </div>
           <div class="header-content">
             <h1>RD Codes RLP</h1>
-            <div class="version-info" id="version-info">v1.5</div>
+            <div class="version-info" id="version-info">v1.6</div>
           </div>
         </div>
         <div class="header-actions">
@@ -147,7 +147,7 @@
               <input 
                 type="text" 
                 id="multi-search" 
-                placeholder="Codes oder Beschreibungen suchen (z.B. '237 268' oder 'Reanimation Schock')..."
+                placeholder="Codes oder Beschreibungen suchen (z.B. '237-268' oder 'Reanimation Schock')..."
                 class="search-input multi-search-input"
                 autocomplete="off"
               />
@@ -156,7 +156,7 @@
               </button>
             </div>
             <div class="search-help">
-              💡 Mehrere Codes durch Leerzeichen trennen
+              💡 Mehrere Codes mit Minus trennen (z.B. "237-268-900")
             </div>
           </div>
           
@@ -165,9 +165,6 @@
             <h3>📋 Gefundene Codes</h3>
             <div id="found-codes" class="found-codes">
               <!-- Gefundene Codes werden hier angezeigt -->
-            </div>
-            <div class="priority-assessment" id="priority-assessment">
-              <!-- Prioritätseinschätzung wird hier angezeigt -->
             </div>
           </div>
 
@@ -206,7 +203,6 @@
             <li>Multi-Code-Suche (leerzeichengetrennt)</li>
             <li>Case-insensitive Suche (Groß-/Kleinschreibung egal)</li>
             <li>Eigene JSON-Dateien hochladen</li>
-            <li>Automatische Prioritätsanalyse</li>
             <li>Farbkodierte Kategorien</li>
             <li>Offline-Funktionalität (PWA)</li>
             <li>Automatische App-Updates</li>
@@ -223,12 +219,12 @@
 
           <h4>🔍 Suchtipps:</h4>
           <ul>
-            <li><strong>Mehrere Codes:</strong> "237 268 900"</li>
-            <li><strong>Nach Text:</strong> "reanimation" oder "schock"</li>
-            <li><strong>Gemischt:</strong> "237 reanimation"</li>
-            <li><strong>Groß-/Kleinschreibung:</strong> egal - "NEF" = "nef"</li>
+              <li><strong>Mehrere Codes:</strong> "237-268-900"</li>
+              <li><strong>Nach Text:</strong> "reanimation" oder "schock"</li>
+              <li><strong>Gemischt:</strong> "237-reanimation"</li>
+              <li><strong>Groß-/Kleinschreibung:</strong> egal - "NEF" = "nef"</li>
           </ul>
-
+          
           <h4>🔄 Updates:</h4>
           <ul>
             <li>Die App prüft automatisch auf Updates</li>
