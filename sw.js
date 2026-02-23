@@ -1,4 +1,4 @@
-const APP_VERSION = '1.0';
+const APP_VERSION = '1.3';
 const CACHE_NAME = `rettungsdienst-codes-v${APP_VERSION}`;
 const APP_NAME = 'Rettungsdienst Codes RLP';
 
@@ -8,6 +8,8 @@ const urlsToCache = [
     './styles.css',
     './app.js',
     './manifest.json',
+    './einsatzcodes.json',
+    './images/logo.png',
     './icons/icon-72x72.png',
     './icons/icon-96x96.png',
     './icons/icon-128x128.png',
@@ -18,58 +20,86 @@ const urlsToCache = [
     './icons/icon-512x512.png'
 ];
 
-// Installation
+// Installation - Service Worker wird installiert
 self.addEventListener('install', event => {
-    console.log(`Service Worker installiert - Version ${APP_VERSION}`);
+    console.log(`🔧 Service Worker installiert - Version ${APP_VERSION}`);
+
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Cache geöffnet:', CACHE_NAME);
+                console.log('📦 Cache geöffnet:', CACHE_NAME);
                 return cache.addAll(urlsToCache);
             })
+            .then(() => {
+                console.log('✅ Alle Dateien erfolgreich gecacht');
+                // Nach erfolgreichem Caching Clients über Update informieren
+                return self.clients.matchAll();
+            })
+            .then(clients => {
+                if (clients.length > 0) {
+                    console.log(`📢 Benachrichtige ${clients.length} Client(s) über Update`);
+                    clients.forEach(client => {
+                        client.postMessage({
+                            type: 'UPDATE_AVAILABLE',
+                            version: APP_VERSION
+                        });
+                    });
+                }
+            })
             .catch(error => {
-                console.error('Fehler beim Cachen der Dateien:', error);
+                console.error('❌ Fehler beim Cachen der Dateien:', error);
             })
     );
+
+    // Sofort neue Version aktivieren
     self.skipWaiting();
 });
 
-// Aktivierung
+// Aktivierung - Service Worker wird aktiviert
 self.addEventListener('activate', event => {
-    console.log(`Service Worker aktiviert - Version ${APP_VERSION}`);
+    console.log(`🚀 Service Worker aktiviert - Version ${APP_VERSION}`);
+
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName.startsWith('rettungsdienst-codes-v') && cacheName !== CACHE_NAME) {
-                        console.log('Lösche alten Cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
+        Promise.all([
+            // Alte Caches löschen
+            caches.keys().then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(cacheName => {
+                        if (cacheName.startsWith('rettungsdienst-codes-v') && cacheName !== CACHE_NAME) {
+                            console.log('🗑️ Lösche alten Cache:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            }),
+            // Sofort Kontrolle über alle Clients übernehmen
+            self.clients.claim()
+        ])
     );
-    return self.clients.claim();
 });
 
-// Fetch Events
+// Fetch Events - Requests abfangen und aus Cache bedienen
 self.addEventListener('fetch', event => {
+    // Nur GET-Requests verarbeiten
     if (event.request.method !== 'GET') {
         return;
     }
 
     const url = new URL(event.request.url);
     const isNavigationRequest = event.request.mode === 'navigate';
-    const isHTMLRequest = event.request.destination === 'document' || 
-                         url.pathname.endsWith('.html') || 
-                         url.pathname === '/' ||
-                         url.pathname.endsWith('/');
+    const isHTMLRequest = event.request.destination === 'document' ||
+        url.pathname.endsWith('.html') ||
+        url.pathname === '/' ||
+        url.pathname.endsWith('/');
 
+    // Navigation Requests (HTML Seiten)
     if (isNavigationRequest || isHTMLRequest) {
         event.respondWith(
+            // Zuerst versuchen aus Netzwerk zu laden
             fetch(event.request)
                 .then(response => {
-                    if (response && response.status === 200) {
+                    // Bei erfolgreichem Netzwerk-Request, Response cachen
+                    if (response && response.status === 200 && response.type === 'basic') {
                         const responseClone = response.clone();
                         caches.open(CACHE_NAME).then(cache => {
                             cache.put(event.request, responseClone);
@@ -78,28 +108,49 @@ self.addEventListener('fetch', event => {
                     return response;
                 })
                 .catch(() => {
+                    // Bei Netzwerk-Fehler aus Cache bedienen
                     return caches.match(event.request)
                         .then(cachedResponse => {
                             if (cachedResponse) {
+                                console.log('📱 Offline: Bediene aus Cache:', event.request.url);
                                 return cachedResponse;
                             }
+                            // Fallback für Navigation Requests
                             if (isNavigationRequest) {
                                 return caches.match('./index.html');
                             }
+                            // Wenn nichts im Cache, Fehler werfen
                             throw new Error('Keine Cache-Antwort verfügbar');
                         });
                 })
         );
-    } else {
+    }
+    // Alle anderen Requests (CSS, JS, Bilder, etc.)
+    else {
         event.respondWith(
+            // Zuerst aus Cache versuchen (Cache First Strategy)
             caches.match(event.request)
                 .then(cachedResponse => {
                     if (cachedResponse) {
+                        // Cache-Hit: Response zurückgeben, aber trotzdem im Hintergrund updaten
+                        fetch(event.request).then(response => {
+                            if (response && response.status === 200 && response.type === 'basic') {
+                                const responseClone = response.clone();
+                                caches.open(CACHE_NAME).then(cache => {
+                                    cache.put(event.request, responseClone);
+                                });
+                            }
+                        }).catch(() => {
+                            // Netzwerk-Fehler ignorieren wenn wir Cache haben
+                        });
+
                         return cachedResponse;
                     }
-                    
+
+                    // Kein Cache-Hit: Aus Netzwerk laden
                     return fetch(event.request).then(response => {
-                        if (response && response.status === 200) {
+                        // Erfolgreiche Response cachen
+                        if (response && response.status === 200 && response.type === 'basic') {
                             const responseClone = response.clone();
                             caches.open(CACHE_NAME).then(cache => {
                                 cache.put(event.request, responseClone);
@@ -108,22 +159,41 @@ self.addEventListener('fetch', event => {
                         return response;
                     });
                 })
+                .catch(error => {
+                    console.error('❌ Fetch Fehler:', event.request.url, error);
+                    // Bei kritischen Dateien (JS/CSS) einen Fallback bereitstellen
+                    if (event.request.url.includes('.css')) {
+                        return new Response('/* Offline - CSS nicht verfügbar */', {
+                            headers: { 'Content-Type': 'text/css' }
+                        });
+                    }
+                    if (event.request.url.includes('.js')) {
+                        return new Response('console.log("Offline - JS nicht verfügbar");', {
+                            headers: { 'Content-Type': 'application/javascript' }
+                        });
+                    }
+                    throw error;
+                })
         );
     }
 });
 
-// Message Handler
+// Message Handler - Nachrichten von der App empfangen
 self.addEventListener('message', event => {
     const message = event.data;
-    
+
     if (!message) return;
+
+    console.log('📬 Service Worker Message empfangen:', message.type);
 
     switch (message.type) {
         case 'SKIP_WAITING':
+            // Sofort neue Version aktivieren
             self.skipWaiting();
             break;
-            
+
         case 'GET_VERSION':
+            // Version-Informationen zurücksenden
             if (event.ports && event.ports[0]) {
                 event.ports[0].postMessage({
                     type: 'VERSION_INFO',
@@ -133,15 +203,33 @@ self.addEventListener('message', event => {
                 });
             }
             break;
-            
+
         case 'CLEAR_CACHE':
+            // Cache löschen auf Anfrage
             event.waitUntil(
-                caches.delete(CACHE_NAME).then(() => {
-                    console.log('Cache gelöscht auf Benutzeranfrage');
+                caches.delete(CACHE_NAME).then((success) => {
+                    console.log('🗑️ Cache gelöscht auf Benutzeranfrage:', success);
                     if (event.ports && event.ports[0]) {
                         event.ports[0].postMessage({
                             type: 'CACHE_CLEARED',
-                            success: true
+                            success: success
+                        });
+                    }
+                })
+            );
+            break;
+
+        case 'CACHE_STATUS':
+            // Cache-Status abfragen
+            event.waitUntil(
+                caches.open(CACHE_NAME).then(cache => {
+                    return cache.keys();
+                }).then(requests => {
+                    if (event.ports && event.ports[0]) {
+                        event.ports[0].postMessage({
+                            type: 'CACHE_STATUS_RESPONSE',
+                            cacheSize: requests.length,
+                            cacheName: CACHE_NAME
                         });
                     }
                 })
@@ -150,7 +238,7 @@ self.addEventListener('message', event => {
     }
 });
 
-// Push Notifications
+// Push Notifications - für zukünftige Erweiterungen
 self.addEventListener('push', event => {
     let notificationData = {
         title: APP_NAME,
@@ -204,20 +292,23 @@ self.addEventListener('push', event => {
 
 // Notification Click Handler
 self.addEventListener('notificationclick', event => {
-    console.log('Notification Click:', event.action);
+    console.log('🔔 Notification Click:', event.action);
     event.notification.close();
 
     if (event.action === 'open' || !event.action) {
+        // App öffnen oder fokussieren
         event.waitUntil(
             clients.matchAll({
                 type: 'window',
                 includeUncontrolled: true
             }).then(clientList => {
+                // Prüfen ob App bereits offen ist
                 for (const client of clientList) {
                     if (client.url.includes(self.location.origin) && 'focus' in client) {
                         return client.focus();
                     }
                 }
+                // App nicht offen - neue Instanz öffnen
                 if (clients.openWindow) {
                     return clients.openWindow('./');
                 }
@@ -226,14 +317,15 @@ self.addEventListener('notificationclick', event => {
     }
 });
 
-// Background Sync für Offline-Funktionalität
+// Background Sync - für Offline-Synchronisation
 self.addEventListener('sync', event => {
-    console.log('Background Sync Event:', event.tag);
-    
+    console.log('🔄 Background Sync Event:', event.tag);
+
     if (event.tag === 'background-sync') {
         event.waitUntil(
             Promise.resolve().then(() => {
-                console.log('Background Sync ausgeführt');
+                console.log('✅ Background Sync ausgeführt');
+                // Optional: Benachrichtigung über erfolgreiche Synchronisation
                 return self.registration.showNotification(`${APP_NAME} - Sync`, {
                     body: 'Daten wurden synchronisiert',
                     icon: './icons/icon-192x192.png',
@@ -247,13 +339,30 @@ self.addEventListener('sync', event => {
 
 // Error Handler
 self.addEventListener('error', event => {
-    console.error('Service Worker Error:', event.error);
+    console.error('❌ Service Worker Error:', event.error);
 });
 
 self.addEventListener('unhandledrejection', event => {
-    console.error('Service Worker Unhandled Promise Rejection:', event.reason);
+    console.error('❌ Service Worker Unhandled Promise Rejection:', event.reason);
 });
 
-console.log(`${APP_NAME} Service Worker geladen - Version ${APP_VERSION}`);
-console.log('Cache Name:', CACHE_NAME);
-console.log('Zu cachende URLs:', urlsToCache.length);
+// Periodische Background Sync registrieren (falls unterstützt)
+self.addEventListener('periodicsync', event => {
+    if (event.tag === 'background-sync') {
+        event.waitUntil(
+            // Hier könnten Sie periodische Updates implementieren
+            console.log('🔄 Periodic Background Sync ausgeführt')
+        );
+    }
+});
+
+// Service Worker Update Event
+self.addEventListener('updatefound', () => {
+    console.log('🔄 Service Worker Update gefunden');
+});
+
+// Startup-Log
+console.log(`🚀 ${APP_NAME} Service Worker geladen - Version ${APP_VERSION}`);
+console.log(`📦 Cache Name: ${CACHE_NAME}`);
+console.log(`📂 Zu cachende URLs: ${urlsToCache.length}`);
+console.log('🎯 Service Worker bereit für Requests');

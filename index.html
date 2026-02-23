@@ -9,6 +9,7 @@
     <title>Rettungsdienst Codes RLP</title>
     <meta name="description" content="Einsatzcode-Nachschlagewerk für Rettungsdienst RLP - ILS Landau" />
 
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="./styles.css" />
     <link rel="manifest" href="./manifest.json" />
 
@@ -29,12 +30,15 @@
   </head>
   <body>
     <div class="app">
+      <!-- Header -->
       <header>
         <div class="logo">
-          <div class="logo-img">🚑</div>
+          <div class="logo-img">
+            <img src="./logo.png" alt="Rettungsdienst Logo" class="logo-image">
+          </div>
           <div class="header-content">
             <h1>RD Codes RLP</h1>
-            <div class="version-info" id="version-info">Lade Daten...</div>
+            <div class="version-info" id="version-info">v1.3</div>
           </div>
         </div>
         <div class="header-actions">
@@ -53,6 +57,7 @@
           <h2>⚙️ Konfiguration</h2>
           
           <div class="config-content">
+            <!-- Aktuelle Konfiguration -->
             <div class="current-config">
               <h3>📄 Aktuelle Datenquelle</h3>
               <div class="config-info" id="current-config-info">
@@ -61,7 +66,11 @@
                   <span class="config-value" id="config-source">-</span>
                 </div>
                 <div class="config-item">
-                  <span class="config-label">Version:</span>
+                  <span class="config-label">App-Version:</span>
+                  <span class="config-value" id="app-version">-</span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label">Daten-Version:</span>
                   <span class="config-value" id="config-version">-</span>
                 </div>
                 <div class="config-item">
@@ -75,9 +84,12 @@
               </div>
             </div>
 
+            <!-- Upload Section -->
             <div class="upload-section">
               <h3>📁 Neue Datei hochladen</h3>
-              <div class="file-upload-area" id="file-upload-area">
+              
+              <!-- Desktop: Drag & Drop Area -->
+              <div class="file-upload-area desktop-only" id="file-upload-area">
                 <input 
                   type="file" 
                   id="file-input" 
@@ -93,6 +105,18 @@
                 </div>
               </div>
               
+              <!-- Mobile: Nur Info Area -->
+              <div class="mobile-upload-area mobile-only" id="mobile-upload-area">
+                <div class="upload-info">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">
+                    <strong>JSON-Konfigurationsdatei hochladen</strong>
+                    <br><small>Nur .json Dateien werden akzeptiert</small>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action Buttons -->
               <div class="upload-actions">
                 <button id="select-file-btn" class="btn-secondary">
                   📁 Datei auswählen
@@ -106,6 +130,7 @@
               </div>
             </div>
 
+            <!-- Validation Result -->
             <div class="validation-result" id="validation-result" style="display: none;">
               <h3>✅ Validierungsergebnis</h3>
               <div id="validation-details"></div>
@@ -116,6 +141,7 @@
         <!-- Multi-Code-Suche Section -->
         <section class="multi-search-section">
           <h2>🔍 Code-Suche</h2>
+          
           <div class="search-wrapper">
             <div class="search-input-container">
               <input 
@@ -183,6 +209,7 @@
             <li>Automatische Prioritätsanalyse</li>
             <li>Farbkodierte Kategorien</li>
             <li>Offline-Funktionalität (PWA)</li>
+            <li>Automatische App-Updates</li>
           </ul>
 
           <h4>🎯 Bedienung:</h4>
@@ -202,25 +229,41 @@
             <li><strong>Groß-/Kleinschreibung:</strong> egal - "NEF" = "nef"</li>
           </ul>
 
-          <h4>📄 JSON-Format:</h4>
+          <h4>🔄 Updates:</h4>
+          <ul>
+            <li>Die App prüft automatisch auf Updates</li>
+            <li>Sie werden benachrichtigt wenn eine neue Version verfügbar ist</li>
+            <li>Updates können sofort oder später installiert werden</li>
+            <li>Die App funktioniert auch offline (PWA)</li>
+          </ul>
+
+          <h4>📄 JSON-Format für eigene Dateien:</h4>
           <pre><code>{
   "metadata": {
-    "title": "Titel",
+    "title": "Meine Codes",
     "version": "1.0", 
-    "lastUpdated": "2021-12-01"
+    "lastUpdated": "2024-01-15"
   },
   "categories": {
     "kategorie1": {
-      "name": "Name",
+      "name": "Kategorie Name",
       "color": "#FF0000",
       "codes": {
-        "100": "Beschreibung"
+        "100": "Code-Beschreibung",
+        "101": "Weitere Beschreibung"
+      }
+    },
+    "kategorie2": {
+      "name": "Weitere Kategorie",
+      "color": "#0000FF",
+      "codes": {
+        "200": "Anderer Code"
       }
     }
   }
 }</code></pre>
 
-          <h4>🎨 Kategoriefarben:</h4>
+          <h4>🎨 Empfohlene Kategoriefarben:</h4>
           <div class="color-examples">
             <div class="color-item">
               <span class="color-dot" style="background: #DC2626;"></span>
@@ -240,23 +283,40 @@
             </div>
             <div class="color-item">
               <span class="color-dot" style="background: #F59E0B;"></span>
-              <span>Diverses: #F59E0B</span>
+              <span>Trauma/Unfall: #F59E0B</span>
+            </div>
+            <div class="color-item">
+              <span class="color-dot" style="background: #8B5CF6;"></span>
+              <span>Sonstiges: #8B5CF6</span>
             </div>
           </div>
 
+          <h4>⚙️ Technische Details:</h4>
+          <ul>
+            <li>Progressive Web App (PWA) - installierbar</li>
+            <li>Offline-Funktionalität durch Service Worker</li>
+            <li>Automatisches Caching für schnelle Ladezeiten</li>
+            <li>Responsive Design für alle Geräte</li>
+            <li>Dark Mode Unterstützung</li>
+          </ul>
+
           <div class="disclaimer">
             <strong>⚠️ Wichtiger Hinweis:</strong><br>
-            Diese App dient nur als Nachschlagewerk. 
-            Sie ersetzt nicht die professionelle Ausbildung 
-            und Erfahrung im Rettungsdienst.
+            Diese App dient nur als Nachschlagewerk und Hilfsmittel. 
+            Sie ersetzt nicht die professionelle Ausbildung, 
+            Erfahrung und das klinische Urteilsvermögen im Rettungsdienst.
+            Alle Angaben ohne Gewähr. Bei medizinischen Notfällen 
+            konsultieren Sie immer die aktuellen Leitlinien und 
+            Behandlungsprotokolle Ihrer Organisation.
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Message Container -->
+    <!-- Message Container für Toast-Nachrichten -->
     <div id="message-container"></div>
     
+    <!-- Scripts -->
     <script src="app.js"></script>
   </body>
 </html>
