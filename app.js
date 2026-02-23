@@ -3,7 +3,7 @@ class RettungsdienstApp {
         this.codes = {};
         this.foundCodes = [];
         this.currentDataSource = 'default';
-        this.currentAppVersion = '1.6'; // Version synchron mit sw.js halten
+        this.currentAppVersion = '1.7'; // Version synchron mit sw.js halten
     }
 
     async init() {
@@ -32,7 +32,7 @@ class RettungsdienstApp {
     updateVersionDisplay() {
         const versionInfoEl = document.getElementById('version-info');
         if (versionInfoEl) {
-            versionInfoEl.textContent = `App: ${this.currentAppVersion}`;
+            versionInfoEl.textContent = `v${this.currentAppVersion}`;
         }
     }
 
@@ -717,35 +717,10 @@ class RettungsdienstApp {
             appVersionEl.textContent = this.currentAppVersion;
         }
 
-        // Service Worker Version asynchron abrufen (ohne zu warten)
-        // Service Worker Version asynchron abrufen (ohne zu warten)
-        this.getVersionInfo().then(versionInfo => {
-            const dataVersion = this.codes.metadata?.version || 'Unbekannt';
-            const appVersion = versionInfo.version;
-
-            if (versionInfoEl) {
-                // Mobile-optimierte Anzeige
-                const isMobile = window.innerWidth <= 414;
-                if (isMobile) {
-                    // Für mobile Geräte: Nur die wichtigsten Infos
-                    const shortVersion = dataVersion.includes('2021') ? 'v2021' : dataVersion.substring(0, 8);
-                    versionInfoEl.textContent = shortVersion;
-                } else {
-                    // Für Desktop: Vollständige Information
-                    versionInfoEl.textContent = `Data: ${dataVersion} | App: ${appVersion}`;
-                }
-            }
-        }).catch(() => {
-            // Fallback wenn Service Worker nicht verfügbar
-            const dataVersion = this.codes.metadata?.version || 'Unbekannt';
-            if (versionInfoEl) {
-                const isMobile = window.innerWidth <= 414;
-                const displayVersion = isMobile ?
-                    (dataVersion.includes('2021') ? 'v2021' : dataVersion.substring(0, 8)) :
-                    `Data: ${dataVersion} | App: ${this.currentAppVersion}`;
-                versionInfoEl.textContent = displayVersion;
-            }
-        });
+        // Nur App-Version anzeigen
+        if (versionInfoEl) {
+            versionInfoEl.textContent = `v${this.currentAppVersion}`;
+        }
     }
 
     async getVersionInfo() {

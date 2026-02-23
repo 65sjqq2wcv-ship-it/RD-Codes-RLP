@@ -1,4 +1,4 @@
-const APP_VERSION = '1.6';
+const APP_VERSION = '1.7';
 const CACHE_NAME = `rettungsdienst-codes-v${APP_VERSION}`;
 const APP_NAME = 'Rettungsdienst Codes RLP';
 
