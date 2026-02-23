@@ -3,7 +3,7 @@ class RettungsdienstApp {
         this.codes = {};
         this.foundCodes = [];
         this.currentDataSource = 'default';
-        this.currentAppVersion = '1.3'; // Version synchron mit sw.js halten
+        this.currentAppVersion = '1.5'; // Version synchron mit sw.js halten
     }
 
     async init() {
@@ -474,6 +474,13 @@ class RettungsdienstApp {
 
         if (allCodesDisplay) allCodesDisplay.style.display = 'none';
 
+        // Prüfen ob es eine Kategoriesuche ist
+        if (query.startsWith('Kategorie: ')) {
+            // Kategorie-Filter wurde bereits angewendet, nichts weiter tun
+            return;
+        }
+
+        // Normale Suche
         const searchTerms = query.trim().split(/\s+/);
         const results = [];
 
@@ -621,26 +628,55 @@ class RettungsdienstApp {
 
         this.foundCodes = [];
         this.safeShowAllCodes();
-        this.showMessage('Suche geleert', 'info');
+        this.showMessage('Filter zurückgesetzt', 'info');
 
         if (searchInput) searchInput.focus();
     }
 
     filterByCategory(categoryKey) {
-        const searchInput = document.getElementById('multi-search');
         const category = this.codes.categories[categoryKey];
+        const searchResults = document.getElementById('search-results');
+        const allCodesDisplay = document.getElementById('all-codes-display');
+        const searchInput = document.getElementById('multi-search');
 
-        if (searchInput && category) {
-            searchInput.value = category.name.toLowerCase();
-            this.handleMultiSearch(searchInput.value);
-            this.toggleClearButton(searchInput.value);
+        if (!category) return;
 
-            document.querySelector('.multi-search-section').scrollIntoView({
-                behavior: 'smooth'
+        // Alle Codes dieser Kategorie sammeln
+        const categoryResults = [];
+        Object.keys(category.codes).forEach(code => {
+            categoryResults.push({
+                code,
+                description: category.codes[code],
+                category: categoryKey,
+                categoryName: category.name,
+                color: category.color
             });
+        });
 
-            this.showMessage(`${category.name} Codes gefiltert`, 'success');
+        // Codes nach Code-Nummer sortieren
+        categoryResults.sort((a, b) => {
+            return parseInt(a.code) - parseInt(b.code);
+        });
+
+        // Suchergebnisse anzeigen
+        this.foundCodes = categoryResults;
+        this.displayMultiSearchResults(categoryResults);
+
+        // Suchfeld mit Kategorienamen füllen (für visuelles Feedback)
+        if (searchInput) {
+            searchInput.value = `Kategorie: ${category.name}`;
+            this.toggleClearButton(searchInput.value);
         }
+
+        // All-Codes-Display verstecken
+        if (allCodesDisplay) allCodesDisplay.style.display = 'none';
+
+        // Zur Suchergebnis-Sektion scrollen
+        document.querySelector('.multi-search-section').scrollIntoView({
+            behavior: 'smooth'
+        });
+
+        this.showMessage(`${categoryResults.length} Codes in ${category.name} gefunden`, 'success');
     }
 
     addCodeToSearch(code) {
@@ -718,18 +754,32 @@ class RettungsdienstApp {
         }
 
         // Service Worker Version asynchron abrufen (ohne zu warten)
+        // Service Worker Version asynchron abrufen (ohne zu warten)
         this.getVersionInfo().then(versionInfo => {
             const dataVersion = this.codes.metadata?.version || 'Unbekannt';
             const appVersion = versionInfo.version;
 
             if (versionInfoEl) {
-                versionInfoEl.textContent = `Data: ${dataVersion} | App: ${appVersion}`;
+                // Mobile-optimierte Anzeige
+                const isMobile = window.innerWidth <= 414;
+                if (isMobile) {
+                    // Für mobile Geräte: Nur die wichtigsten Infos
+                    const shortVersion = dataVersion.includes('2021') ? 'v2021' : dataVersion.substring(0, 8);
+                    versionInfoEl.textContent = shortVersion;
+                } else {
+                    // Für Desktop: Vollständige Information
+                    versionInfoEl.textContent = `Data: ${dataVersion} | App: ${appVersion}`;
+                }
             }
         }).catch(() => {
             // Fallback wenn Service Worker nicht verfügbar
             const dataVersion = this.codes.metadata?.version || 'Unbekannt';
             if (versionInfoEl) {
-                versionInfoEl.textContent = `Data: ${dataVersion} | App: ${this.currentAppVersion}`;
+                const isMobile = window.innerWidth <= 414;
+                const displayVersion = isMobile ?
+                    (dataVersion.includes('2021') ? 'v2021' : dataVersion.substring(0, 8)) :
+                    `Data: ${dataVersion} | App: ${this.currentAppVersion}`;
+                versionInfoEl.textContent = displayVersion;
             }
         });
     }

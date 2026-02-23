@@ -109,6 +109,10 @@ header {
 .version-info {
   font-size: 0.75rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px; /* Begrenzung für mobile Geräte */
 }
 
 .header-actions {
@@ -1265,10 +1269,6 @@ section h2 {
     font-size: 1rem;
   }
 
-  .version-info {
-    font-size: 0.7rem;
-  }
-
   .multi-search-input {
     font-size: 0.85rem;
     padding: 0.75rem;
@@ -1460,10 +1460,6 @@ section h2 {
   .header-content h1 {
     font-size: 1.1rem;
   }
-  
-  .version-info {
-    font-size: 0.65rem;
-  }
 }
 
 /* iPhone SE und kleinere Geräte */
@@ -1484,5 +1480,27 @@ section h2 {
   
   .header-content h1 {
     font-size: 1rem;
+  }
+}
+
+/* iPhone spezifische Anpassungen */
+@media (max-width: 414px) {
+  .version-info {
+    max-width: 100px;
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .version-info {
+    max-width: 80px;
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .version-info {
+    max-width: 70px;
+    font-size: 0.55rem;
   }
 }
