@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Rettungsdienst Codes RLP</title>
+    <meta name="description" content="Einsatzcode-Nachschlagewerk für Rettungsdienst RLP - ILS Landau" />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-16x16.png" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="RD Codes RLP" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#DC2626" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1E293B" media="(prefers-color-scheme: dark)" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo">
+          <div class="logo-img">🚑</div>
+          <div class="header-content">
+            <h1>RD Codes RLP</h1>
+            <div class="version-info" id="version-info">Lade Daten...</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="config-icon" class="header-icon-btn" title="Konfiguration">
+            ⚙️
+          </button>
+          <button id="info-icon" class="header-icon-btn" title="Info">
+            ℹ️
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <!-- Konfiguration Section -->
+        <section class="config-section" id="config-section" style="display: none;">
+          <h2>⚙️ Konfiguration</h2>
+          
+          <div class="config-content">
+            <div class="current-config">
+              <h3>📄 Aktuelle Datenquelle</h3>
+              <div class="config-info" id="current-config-info">
+                <div class="config-item">
+                  <span class="config-label">Quelle:</span>
+                  <span class="config-value" id="config-source">-</span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label">Version:</span>
+                  <span class="config-value" id="config-version">-</span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label">Letzte Aktualisierung:</span>
+                  <span class="config-value" id="config-updated">-</span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label">Kategorien:</span>
+                  <span class="config-value" id="config-categories">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="upload-section">
+              <h3>📁 Neue Datei hochladen</h3>
+              <div class="file-upload-area" id="file-upload-area">
+                <input 
+                  type="file" 
+                  id="file-input" 
+                  accept=".json"
+                  style="display: none;"
+                />
+                <div class="upload-content" id="upload-content">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">
+                    <strong>JSON-Datei hier ablegen oder klicken</strong>
+                    <br><small>Nur .json Dateien werden akzeptiert</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="upload-actions">
+                <button id="select-file-btn" class="btn-secondary">
+                  📁 Datei auswählen
+                </button>
+                <button id="reset-to-default-btn" class="btn-secondary">
+                  🔄 Standard wiederherstellen
+                </button>
+                <button id="download-current-btn" class="btn-secondary">
+                  💾 Aktuelle Konfiguration herunterladen
+                </button>
+              </div>
+            </div>
+
+            <div class="validation-result" id="validation-result" style="display: none;">
+              <h3>✅ Validierungsergebnis</h3>
+              <div id="validation-details"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Multi-Code-Suche Section -->
+        <section class="multi-search-section">
+          <h2>🔍 Code-Suche</h2>
+          <div class="search-wrapper">
+            <div class="search-input-container">
+              <input 
+                type="text" 
+                id="multi-search" 
+                placeholder="Codes oder Beschreibungen suchen (z.B. '237 268' oder 'Reanimation Schock')..."
+                class="search-input multi-search-input"
+                autocomplete="off"
+              />
+              <button id="clear-search-btn" class="clear-search-btn" title="Suche leeren" style="display: none;">
+                ✖️
+              </button>
+            </div>
+            <div class="search-help">
+              💡 Mehrere Codes durch Leerzeichen trennen
+            </div>
+          </div>
+          
+          <!-- Suchergebnisse -->
+          <div id="search-results" class="search-results" style="display: none;">
+            <h3>📋 Gefundene Codes</h3>
+            <div id="found-codes" class="found-codes">
+              <!-- Gefundene Codes werden hier angezeigt -->
+            </div>
+            <div class="priority-assessment" id="priority-assessment">
+              <!-- Prioritätseinschätzung wird hier angezeigt -->
+            </div>
+          </div>
+
+          <!-- Alle Codes anzeigen wenn keine Suche -->
+          <div id="all-codes-display" class="all-codes-display">
+            <h3>📖 Alle verfügbaren Codes</h3>
+            <div id="all-codes-list" class="filtered-codes">
+              <!-- Alle Codes werden hier angezeigt -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Kategorie Übersicht -->
+        <section class="category-overview">
+          <h2>📚 Kategorien</h2>
+          <div class="category-grid" id="category-grid">
+            <!-- Kategorien werden dynamisch geladen -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal">
+      <div class="modal-content">
+        <h2>
+          ℹ️ Über diese App
+          <span class="close" id="info-modal-close">&times;</span>
+        </h2>
+        <div class="info-content">
+          <h3>🚑 Rettungsdienst Codes RLP</h3>
+          <p><strong>Konfigurierbare Code-Datenbank</strong></p>
+          
+          <h4>📱 Funktionen:</h4>
+          <ul>
+            <li>Multi-Code-Suche (leerzeichengetrennt)</li>
+            <li>Case-insensitive Suche (Groß-/Kleinschreibung egal)</li>
+            <li>Eigene JSON-Dateien hochladen</li>
+            <li>Automatische Prioritätsanalyse</li>
+            <li>Farbkodierte Kategorien</li>
+            <li>Offline-Funktionalität (PWA)</li>
+          </ul>
+
+          <h4>🎯 Bedienung:</h4>
+          <ol>
+            <li>Eigene JSON-Datei über ⚙️ hochladen (optional)</li>
+            <li>Codes in das Suchfeld eingeben (z.B. "237 268")</li>
+            <li>Automatische Suche und Analyse</li>
+            <li>Kategorien anklicken zum Filtern</li>
+            <li>✖️ zum Leeren der Suche oder ESC-Taste</li>
+          </ol>
+
+          <h4>🔍 Suchtipps:</h4>
+          <ul>
+            <li><strong>Mehrere Codes:</strong> "237 268 900"</li>
+            <li><strong>Nach Text:</strong> "reanimation" oder "schock"</li>
+            <li><strong>Gemischt:</strong> "237 reanimation"</li>
+            <li><strong>Groß-/Kleinschreibung:</strong> egal - "NEF" = "nef"</li>
+          </ul>
+
+          <h4>📄 JSON-Format:</h4>
+          <pre><code>{
+  "metadata": {
+    "title": "Titel",
+    "version": "1.0", 
+    "lastUpdated": "2021-12-01"
+  },
+  "categories": {
+    "kategorie1": {
+      "name": "Name",
+      "color": "#FF0000",
+      "codes": {
+        "100": "Beschreibung"
+      }
+    }
+  }
+}</code></pre>
+
+          <h4>🎨 Kategoriefarben:</h4>
+          <div class="color-examples">
+            <div class="color-item">
+              <span class="color-dot" style="background: #DC2626;"></span>
+              <span>Herz-Kreislauf: #DC2626</span>
+            </div>
+            <div class="color-item">
+              <span class="color-dot" style="background: #3B82F6;"></span>
+              <span>Atmung: #3B82F6</span>
+            </div>
+            <div class="color-item">
+              <span class="color-dot" style="background: #7C3AED;"></span>
+              <span>Neurologisch: #7C3AED</span>
+            </div>
+            <div class="color-item">
+              <span class="color-dot" style="background: #059669;"></span>
+              <span>Internistisch: #059669</span>
+            </div>
+            <div class="color-item">
+              <span class="color-dot" style="background: #F59E0B;"></span>
+              <span>Diverses: #F59E0B</span>
+            </div>
+          </div>
+
+          <div class="disclaimer">
+            <strong>⚠️ Wichtiger Hinweis:</strong><br>
+            Diese App dient nur als Nachschlagewerk. 
+            Sie ersetzt nicht die professionelle Ausbildung 
+            und Erfahrung im Rettungsdienst.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Container -->
+    <div id="message-container"></div>
+    
+    <script src="app.js"></script>
+  </body>
+</html>
