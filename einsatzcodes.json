@@ -11,13 +11,198 @@
       "name": "Infektionskrankheiten",
       "color": "#EF4444",
       "codes": {
-        "100": "Hepatitis B, ohne Erregerfreisetzung",
-        "101": "Hepatitis C, ohne Erregerfreisetzung",
-        "102": "HIV, ohne Erregerfreisetzung",
-        "103": "Legionellose",
-        "104": "geschlossene Tuberkulose",
-        "105": "Fieberfahfter Infekt, ohne Tröpchenfreisetung",
-        "106": "Herpes Zoster (Gürtelrose) mit abgedeckten Hautläsionen"
+        "100": {
+          "description": "Hepatitis B, ohne Erregerfreisetzung",
+          "color": "#5F8A6F"
+        },
+        "101": {
+          "description": "Hepatitis C, ohne Erregerfreisetzung",
+          "color": "#5F8A6F"
+        },
+        "102": {
+          "description": "HIV, ohne Erregerfreisetzung",
+          "color": "#5F8A6F"
+        },
+        "103": {
+          "description": "Legionellose",
+          "color": "#5F8A6F"
+        },
+        "104": {
+          "description": "geschlossene Tuberkulose",
+          "color": "#5F8A6F"
+        },
+        "105": {
+          "description": "Fieberhafter Infekt, ohne Tröpfchenfreisetzung",
+          "color": "#5F8A6F"
+        },
+        "106": {
+          "description": "Herpes Zoster (Gürtelrose) mit abgedeckten Hautläsionen",
+          "color": "#5F8A6F"
+        },
+        "110": {
+          "description": "ESBL-Infektion",
+          "color": "#76FF03"
+        },
+        "111": {
+          "description": "Hepatitis A oder E Atmung",
+          "color": "#76FF03"
+        },
+        "112": {
+          "description": "MRSA, ohne äußere Besiedlung/Infektion bzw. abgedeckt",
+          "color": "#76FF03"
+        },
+        "113": {
+          "description": "Pfeifferisches Drüsenfieber (Mononukl.), ohne Kontamination",
+          "color": "#76FF03"
+        },
+        "114": {
+          "description": "Salmonelleninfektion",
+          "color": "#76FF03"
+        },
+        "115": {
+          "description": "VRE-/VSE-Infektion",
+          "color": "#76FF03"
+        },
+        "116": {
+          "description": "3 MRGN, Multires. gramneg. Stäbchen, z. B. E. coli",
+          "color": "#76FF03"
+        },
+        "117": {
+          "description": "Hepatitis B, mit Erregerfreisetzung",
+          "color": "#76FF03"
+        },
+        "118": {
+          "description": "Hepatitis C, mit Erregerfreisetzung",
+          "color": "#76FF03"
+        },
+        "119": {
+          "description": "HIV, mit Erregerfreisetzung",
+          "color": "#76FF03"
+        },
+        "120": {
+          "description": "Clostridium difficile-Infektion",
+          "color": "#FFEB3B"
+        },
+        "121": {
+          "description": "Diphtherie",
+          "color": "#FFEB3B"
+        },
+        "122": {
+          "description": "Diarrhoe, unklare Ursache",
+          "color": "#FFEB3B"
+        },
+        "123": {
+          "description": "Hautausschlag, mit Fieber, unklarer Ursache",
+          "color": "#FFEB3B"
+        },
+        "124": {
+          "description": "Herpes zoster (Gürtelr.), od. Windpocken, offen",
+          "color": "#FFEB3B"
+        },
+        "125": {
+          "description": "Influenza, mit Erregerfreisetzung",
+          "color": "#FFEB3B"
+        },
+        "126": {
+          "description": "Masern",
+          "color": "#FFEB3B"
+        },
+        "127": {
+          "description": "Meningitis, bakteriell",
+          "color": "#FFEB3B"
+        },
+        "128": {
+          "description": "MRSA, m. äußerer Besiedlung/Infekt. bzw. nicht abgedeckt",
+          "color": "#FFEB3B"
+        },
+        "129": {
+          "description": "Norovirus-Infektion",
+          "color": "#FFEB3B"
+        },
+        "130": {
+          "description": "Pertussis (Keuchhusten)",
+          "color": "#FFEB3B"
+        },
+        "131": {
+          "description": "Pneumokokken-Infektion",
+          "color": "#FFEB3B"
+        },
+        "132": {
+          "description": "Rotavirus-Infektion",
+          "color": "#FFEB3B"
+        },
+        "133": {
+          "description": "Scharlach",
+          "color": "#FFEB3B"
+        },
+        "134": {
+          "description": "Tuberkulose, offen",
+          "color": "#FFEB3B"
+        },
+        "135": {
+          "description": "Infektion, sonstiges (z. B. Fieber mit Tröpfchenfreisetzung)",
+          "color": "#FFEB3B"
+        },
+        "136": {
+          "description": "Legionellose, mit Erregerfreisetzung",
+          "color": "#FFEB3B"
+        },
+        "137": {
+          "description": "Clostridium botulinum Septii-Meningitis Abdeckung nötig",
+          "color": "#FFEB3B"
+        },
+        "138": {
+          "description": "Pseudomonas mit Erregerfreisetzung",
+          "color": "#FFEB3B"
+        },
+        "139": {
+          "description": "4 MRGN, Multires. gramneg. Stäbchen, z. B. Acinetobacter",
+          "color": "#FFEB3B"
+        },
+        "140": {
+          "description": "Cholera",
+          "color": "#E57373"
+        },
+        "141": {
+          "description": "Hämorrhagisches Fieber (auch Verdacht)",
+          "color": "#E57373"
+        },
+        "142": {
+          "description": "Polio, akute",
+          "color": "#E57373"
+        },
+        "143": {
+          "description": "Respiratorische Infektion nach Tropenaufenthalt",
+          "color": "#E57373"
+        },
+        "144": {
+          "description": "Clostridium difficile-Infektion mit massiver Kontamination",
+          "color": "#FF9800"
+        },
+        "150": {
+          "description": "Transport > 50 km (> 30 Minuten)",
+          "color": "#76FF03"
+        },
+        "151": {
+          "description": "Krätzmilben",
+          "color": "#76FF03"
+        },
+        "152": {
+          "description": "Läuse",
+          "color": "#76FF03"
+        },
+        "153": {
+          "description": "Flöhe",
+          "color": "#FFEB3B"
+        },
+        "154": {
+          "description": "Pfeifferisches Drüsenfieber (Mononukl.) mit Kontamination",
+          "color": "#FFEB3B"
+        },
+        "155": {
+          "description": "Coronavirus SARS-CoV-2 (incl. Verdachtsfälle)",
+          "color": "#FFEB3B"
+        }
       }
     },
     "zns": {
@@ -386,15 +571,15 @@
       "name": "Transportarten Rheinland-Pfalz",
       "color": "#1F2937",
       "codes": {
-        "0": "KF Rollstuhl",
-        "1": "KF Tragestuhl",
-        "2": "KF liegend",
-        "3": "KTW sitzend (Tragestuhl)",
-        "4": "KTW dringend / sofort",
-        "6": "RTW ohne Sondersignal",
-        "7": "RTW mit Sondersignal",
-        "8": "Notarzt",
-        "9": "NA-Nachforderung"
+        "000": "KF Rollstuhl",
+        "001": "KF Tragestuhl",
+        "002": "KF liegend",
+        "003": "KTW sitzend (Tragestuhl)",
+        "004": "KTW dringend / sofort",
+        "006": "RTW ohne Sondersignal",
+        "007": "RTW mit Sondersignal",
+        "008": "Notarzt",
+        "009": "NA-Nachforderung"
       }
     },
     "rueckmeldung": {
